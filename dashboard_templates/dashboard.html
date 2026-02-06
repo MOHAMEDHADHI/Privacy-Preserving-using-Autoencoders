@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy-Preserving ML - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .session-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .session-item {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background 0.2s ease;
+        }
+        
+        .session-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .session-item:last-child {
+            border-bottom: none;
+        }
+        
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .session-id {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+        
+        .session-time {
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+        
+        .session-details {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .chart-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-healthy {
+            background: #28a745;
+            box-shadow: 0 0 10px #28a745;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .model-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .model-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .model-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .model-metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        
+        .metric-label {
+            color: #6c757d;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Privacy-Preserving ML - Admin Dashboard</h1>
+            <p>Real-time monitoring and analytics for your privacy-preserving machine learning pipeline</p>
+            <div style="margin-top: 15px;">
+                <span class="status-indicator status-healthy"></span>
+                <span style="color: #28a745; font-weight: bold;">System Healthy</span>
+                <button class="refresh-btn" onclick="refreshDashboard()" style="float: right;">🔄 Refresh</button>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="total-sessions">-</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-value" id="total-models">-</div>
+                <div class="stat-label">Models Trained</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="avg-accuracy">-</div>
+                <div class="stat-label">Avg Accuracy</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-value" id="privacy-rate">-</div>
+                <div class="stat-label">Privacy Rate</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="recent-sessions">-</div>
+                <div class="stat-label">Last 24 Hours</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="card">
+                <h2>📋 Recent Training Sessions</h2>
+                <div id="sessions-list" class="session-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading sessions...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🏆 Model Performance</h2>
+                <div id="model-comparison">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading comparison...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card full-width">
+            <h2>📈 Performance Trends</h2>
+            <div class="chart-container">
+                <img id="accuracy-chart" src="/api/charts/accuracy_trend" alt="Accuracy Trend" 
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'200\'%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23999\'%3ENo data available%3C/text%3E%3C/svg%3E'">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function loadOverviewStats() {
+            try {
+                const response = await fetch('/api/stats/overview');
+                const data = await response.json();
+                
+                document.getElementById('total-sessions').textContent = data.total_sessions;
+                document.getElementById('total-models').textContent = data.total_models;
+                document.getElementById('avg-accuracy').textContent = data.avg_accuracy.toFixed(3);
+                document.getElementById('privacy-rate').textContent = data.privacy_rate.toFixed(1) + '%';
+                document.getElementById('recent-sessions').textContent = data.recent_sessions;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        async function loadRecentSessions() {
+            try {
+                const response = await fetch('/api/sessions/recent?limit=10');
+                const data = await response.json();
+                
+                const container = document.getElementById('sessions-list');
+                
+                if (data.sessions.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 40px;">No sessions yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.sessions.map(session => `
+                    <div class="session-item">
+                        <div class="session-header">
+                            <span class="session-id">${session.session_id.substring(0, 20)}...</span>
+                            <span class="badge badge-success">${session.status}</span>
+                        </div>
+                        <div class="session-time">${new Date(session.timestamp).toLocaleString()}</div>
+                        <div class="session-details">
+                            <span>📊 ${session.data_samples} samples</span>
+                            <span>🎯 ${(session.best_accuracy * 100).toFixed(1)}%</span>
+                            <span>⏱️ ${session.training_time.toFixed(2)}s</span>
+                            <span class="badge badge-info">${session.cloud_provider}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                document.getElementById('sessions-list').innerHTML = 
+                    '<p style="text-align: center; color: #dc3545; padding: 40px;">Error loading sessions</p>';
+            }
+        }
+        
+        async function loadModelComparison() {
+            try {
+                const response = await fetch('/api/models/comparison');
+                const data = await response.json();
+                
+                const container = document.getElementById('model-comparison');
+                
+                if (data.comparison.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 40px;">No models yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = '<div class="model-comparison">' + 
+                    data.comparison.map(model => `
+                        <div class="model-card">
+                            <div class="model-name">${model.model_name.replace(/_/g, ' ').toUpperCase()}</div>
+                            <div class="model-metric">
+                                <span class="metric-label">Avg Accuracy:</span>
+                                <span class="metric-value">${(model.avg_accuracy * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="model-metric">
+                                <span class="metric-label">Avg F1:</span>
+                                <span class="metric-value">${(model.avg_f1 * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="model-metric">
+                                <span class="metric-label">Used:</span>
+                                <span class="metric-value">${model.usage_count}x</span>
+                            </div>
+                        </div>
+                    `).join('') + '</div>';
+            } catch (error) {
+                console.error('Error loading model comparison:', error);
+                document.getElementById('model-comparison').innerHTML = 
+                    '<p style="text-align: center; color: #dc3545; padding: 40px;">Error loading comparison</p>';
+            }
+        }
+        
+        function refreshDashboard() {
+            loadOverviewStats();
+            loadRecentSessions();
+            loadModelComparison();
+            document.getElementById('accuracy-chart').src = '/api/charts/accuracy_trend?' + new Date().getTime();
+        }
+        
+        // Initial load
+        loadOverviewStats();
+        loadRecentSessions();
+        loadModelComparison();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(refreshDashboard, 30000);
+    </script>
+</body>
+</html>

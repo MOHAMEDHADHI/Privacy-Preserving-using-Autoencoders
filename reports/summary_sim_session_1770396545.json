@@ -1,0 +1,30 @@
+{
+  "session_id": "sim_session_1770396545",
+  "timestamp": "2026-02-06T22:19:05.304250",
+  "generated_at": "2026-02-06T22:19:05.704915",
+  "overview": {
+    "data_samples": 500,
+    "latent_dimensions": 128,
+    "models_trained": 1,
+    "total_training_time": 0.011999368667602539,
+    "cloud_provider": "render"
+  },
+  "best_model": {
+    "name": "logistic_regression",
+    "accuracy": 0.24
+  },
+  "model_results": {
+    "logistic_regression": {
+      "test_accuracy": 0.24,
+      "training_time": 0.011999368667602539,
+      "status": "success"
+    }
+  },
+  "privacy": {
+    "raw_data_transmitted": false,
+    "latent_vectors_only": true,
+    "privacy_preserved": true,
+    "encryption": "HTTPS",
+    "data_retention": "session_only"
+  }
+}

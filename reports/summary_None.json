@@ -1,0 +1,52 @@
+{
+  "session_id": null,
+  "timestamp": "2026-02-06T17:20:29.464318",
+  "generated_at": "2026-02-06T22:50:30.448696",
+  "overview": {
+    "data_samples": 500,
+    "latent_dimensions": 128,
+    "models_trained": 3,
+    "total_training_time": 7.9946959018707275,
+    "cloud_provider": "render"
+  },
+  "best_model": {
+    "name": "random_forest",
+    "accuracy": 0.38
+  },
+  "model_results": {
+    "logistic_regression": {
+      "error": "The 'liblinear' solver does not support multiclass classification (n_classes >= 3). Either use another solver or wrap the estimator in a OneVsRestClassifier to keep applying a one-versus-rest scheme.",
+      "model_id": null,
+      "status": "failed"
+    },
+    "mlp_classifier": {
+      "deployment": "render",
+      "f1_score": 0.1662595419847328,
+      "model_id": "render_mlp_classifier_1770398427",
+      "precision": 0.11112244897959184,
+      "recall": 0.33,
+      "status": "success",
+      "test_accuracy": 0.33,
+      "train_accuracy": 0.34,
+      "training_time": 5.694088697433472
+    },
+    "random_forest": {
+      "deployment": "render",
+      "f1_score": 0.37813813068651775,
+      "model_id": "render_random_forest_1770398429",
+      "precision": 0.3820103359173126,
+      "recall": 0.38,
+      "status": "success",
+      "test_accuracy": 0.38,
+      "train_accuracy": 1.0,
+      "training_time": 2.2999184131622314
+    }
+  },
+  "privacy": {
+    "raw_data_transmitted": false,
+    "latent_vectors_only": true,
+    "privacy_preserved": true,
+    "encryption": "HTTPS",
+    "data_retention": "session_only"
+  }
+}

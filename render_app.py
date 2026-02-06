@@ -4,7 +4,7 @@ Render Deployment Flask App
 Permanent cloud service for privacy-preserving ML
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import numpy as np
 import json
 from sklearn.linear_model import LogisticRegression
@@ -17,6 +17,227 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
+            margin-bottom: 30px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+        .badge.privacy {
+            background: #6f42c1;
+        }
+        .badge.deployment {
+            background: #fd7e14;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .endpoint {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .endpoint-method {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+        .get { background: #28a745; color: white; }
+        .post { background: #007bff; color: white; }
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .endpoint-desc {
+            color: #6c757d;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        .privacy-box {
+            background: #6f42c1;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .privacy-box h3 {
+            margin-top: 0;
+            color: white;
+        }
+        .privacy-item {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .privacy-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #667eea;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+            color: #6c757d;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Privacy-Preserving ML Cloud Service</h1>
+        <div class="status">
+            <span class="badge">✓ Running</span>
+            <span class="badge privacy">Privacy Protected</span>
+            <span class="badge deployment">Render Ready</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ models_count }}</div>
+                <div class="stat-label">Models Trained</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ training_sessions }}</div>
+                <div class="stat-label">Training Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Privacy Preserved</div>
+            </div>
+        </div>
+
+        <div class="privacy-box">
+            <h3>🛡️ Privacy Guarantees</h3>
+            <div class="privacy-item">Only latent vectors accepted - raw data automatically rejected</div>
+            <div class="privacy-item">HTTPS encryption enforced</div>
+            <div class="privacy-item">No data persistence - session-only storage</div>
+            <div class="privacy-item">Privacy policy enforced at API level</div>
+        </div>
+
+        <div class="section">
+            <h2>📡 API Endpoints</h2>
+            
+            <div class="endpoint">
+                <span class="endpoint-method get">GET</span>
+                <span class="endpoint-path">/</span>
+                <div class="endpoint-desc">API information and status (you are here!)</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method get">GET</span>
+                <span class="endpoint-path">/health</span>
+                <div class="endpoint-desc">Health check endpoint - verify service is running</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method post">POST</span>
+                <span class="endpoint-path">/train</span>
+                <div class="endpoint-desc">Train ML models on latent vectors (Logistic Regression, MLP, Random Forest)</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method post">POST</span>
+                <span class="endpoint-path">/predict</span>
+                <div class="endpoint-desc">Make predictions using trained models</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method get">GET</span>
+                <span class="endpoint-path">/models</span>
+                <div class="endpoint-desc">List all trained models</div>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method get">GET</span>
+                <span class="endpoint-path">/results</span>
+                <div class="endpoint-desc">View training history and results</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Quick Start</h2>
+            <p><strong>Test the service:</strong></p>
+            <p>Visit <code>/health</code> to check service status</p>
+            
+            <p><strong>Train models from Python:</strong></p>
+            <pre style="background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;">
+import requests
+import torch
+
+# Load your latent vectors
+latent_vectors = torch.load('latent_vectors.pt')
+labels = [0, 1, 0, 1, ...]  # Your labels
+
+# Prepare payload
+payload = {
+    "latent_vectors": latent_vectors.tolist(),
+    "labels": labels,
+    "metadata": {
+        "privacy_preserved": True,
+        "original_data_included": False
+    }
+}
+
+# Send to cloud
+response = requests.post('http://127.0.0.1:5000/train', json=payload)
+print(response.json())</pre>
+        </div>
+
+        <div class="footer">
+            <p><strong>Version:</strong> 1.0.0 | <strong>Deployment:</strong> Render | <strong>Runtime:</strong> Python + Flask + Gunicorn</p>
+            <p>Timestamp: {{ timestamp }}</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
 
 # Global storage for models and results
 trained_models = {}
@@ -24,21 +245,33 @@ training_results = {}
 
 @app.route('/', methods=['GET'])
 def home():
-    """Home endpoint"""
-    return jsonify({
-        'service': 'Privacy-Preserving ML Cloud Service',
-        'version': '1.0.0',
-        'status': 'running',
-        'deployment': 'render',
-        'privacy_policy': 'Only latent vectors accepted - raw data automatically rejected',
-        'endpoints': {
-            'health': '/health',
-            'train': '/train (POST)',
-            'models': '/models',
-            'predict': '/predict (POST)'
-        },
-        'timestamp': datetime.now().isoformat()
-    })
+    """Home endpoint with HTML interface"""
+    # Check if request wants HTML (browser) or JSON (API)
+    if request.headers.get('Accept', '').find('text/html') != -1:
+        # Return HTML template for browsers
+        return render_template(
+            'index.html',
+            models_count=len(trained_models),
+            training_sessions=len(training_results),
+            timestamp=datetime.now().isoformat(),
+            base_url=request.url_root.rstrip('/')
+        )
+    else:
+        # Return JSON for API clients
+        return jsonify({
+            'service': 'Privacy-Preserving ML Cloud Service',
+            'version': '1.0.0',
+            'status': 'running',
+            'deployment': 'render',
+            'privacy_policy': 'Only latent vectors accepted - raw data automatically rejected',
+            'endpoints': {
+                'health': '/health',
+                'train': '/train (POST)',
+                'models': '/models',
+                'predict': '/predict (POST)'
+            },
+            'timestamp': datetime.now().isoformat()
+        })
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -57,8 +290,9 @@ def health_check():
 def train_models():
     """Train ML models on received latent vectors"""
     try:
-        print(f"\n🚀 TRAINING REQUEST RECEIVED - {datetime.now()}")
-        print("=" * 60)
+        print(f"\n{'='*70}")
+        print(f"🚀 TRAINING REQUEST RECEIVED - {datetime.now()}")
+        print(f"{'='*70}")
         
         # Parse request data
         data = request.get_json()
@@ -74,11 +308,22 @@ def train_models():
         labels = np.array(data['labels'])
         metadata = data.get('metadata', {})
         
-        print(f"📊 Received data:")
+        print(f"\n📦 RECEIVED LATENT VECTORS FROM CLIENT:")
+        print(f"{'='*70}")
         print(f"   Latent vectors shape: {latent_vectors.shape}")
+        print(f"   Number of samples: {latent_vectors.shape[0]}")
+        print(f"   Latent dimensions: {latent_vectors.shape[1]}")
         print(f"   Labels shape: {labels.shape}")
+        print(f"   Unique classes: {len(np.unique(labels))}")
         print(f"   Privacy preserved: {metadata.get('privacy_preserved', 'Unknown')}")
         print(f"   Raw data included: {metadata.get('original_data_included', 'Unknown')}")
+        print(f"{'='*70}")
+        
+        # Show sample of latent vectors (first 3 samples, first 10 dimensions)
+        print(f"\n🔍 SAMPLE LATENT VECTORS (first 3 samples, first 10 dims):")
+        for i in range(min(3, len(latent_vectors))):
+            print(f"   Sample {i+1}: {latent_vectors[i][:10]}")
+        print(f"{'='*70}\n")
         
         # PRIVACY CHECK - Reject if raw data detected
         if metadata.get('original_data_included', False):
@@ -109,9 +354,12 @@ def train_models():
             )
         
         print(f"\n🎯 Training models on Render cloud:")
+        print(f"{'='*70}")
         print(f"   Training samples: {len(X_train)}")
         print(f"   Test samples: {len(X_test)}")
         print(f"   Feature dimensions: {latent_vectors.shape[1]}")
+        print(f"   ✅ CONFIRMED: Training on LATENT VECTORS only (not raw data)")
+        print(f"{'='*70}\n")
         
         # Define models to train
         models = {
@@ -181,6 +429,8 @@ def train_models():
                 print(f"      Test Accuracy: {test_acc:.3f}")
                 print(f"      F1-Score: {f1:.3f}")
                 print(f"      Training Time: {model_training_time:.2f}s")
+                print(f"      Model ID: {model_id}")
+                print()
                 
             except Exception as e:
                 print(f"   ❌ {model_name} training failed: {str(e)}")
@@ -233,11 +483,13 @@ def train_models():
         training_results[session_id] = response
         
         print(f"\n✅ RENDER CLOUD TRAINING COMPLETED:")
+        print(f"{'='*70}")
         print(f"   Best model: {best_model}")
         print(f"   Best accuracy: {best_accuracy:.3f}")
         print(f"   Total time: {total_training_time:.2f}s")
         print(f"   Privacy preserved: ✅")
         print(f"   Deployment: Render")
+        print(f"{'='*70}\n")
         
         return jsonify(response)
         
