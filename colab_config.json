@@ -1,0 +1,12 @@
+{
+  "endpoint": "REPLACE_WITH_NGROK_URL_FROM_COLAB",
+  "token_configured": true,
+  "ready_to_use": true,
+  "instructions": [
+    "1. Upload Privacy_ML_Cloud_Service_Ready.ipynb to Google Colab",
+    "2. Run all 4 cells in the notebook",
+    "3. Copy the ngrok URL that appears",
+    "4. Replace REPLACE_WITH_NGROK_URL_FROM_COLAB in this file",
+    "5. Run: python main.py"
+  ]
+}
