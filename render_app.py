@@ -88,10 +88,10 @@ def train_models():
 
         model_configs = {
             'logistic_regression': LogisticRegression(
-                random_state=42, max_iter=1000, solver='lbfgs', multi_class='auto'
+                random_state=42, max_iter=1000, solver='lbfgs'
             ),
             'logistic': LogisticRegression(
-                random_state=42, max_iter=1000, solver='lbfgs', multi_class='auto'
+                random_state=42, max_iter=1000, solver='lbfgs'
             ),
             'mlp_classifier': MLPClassifier(
                 hidden_layer_sizes=(64, 32), random_state=42, max_iter=500
